@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.rochano.runningapp.api.GoogleCloudFileUpload;
 import com.rochano.runningapp.model.User;
 import com.rochano.runningapp.repository.UserRepository;
 
@@ -16,6 +17,9 @@ public class UserServiceImpl implements UserServiceIf {
 
 	@Autowired
 	private UserRepository userRepository;
+	
+	@Autowired
+	GoogleCloudFileUpload gcFileUpload;
 
 	@Override
 	public void addUser(User user) throws Exception {
@@ -33,6 +37,18 @@ public class UserServiceImpl implements UserServiceIf {
 		if (!existsUser.isPresent()) {
 			throw new Exception("USER_NOT_EXISTS");
 		} else {
+			if(user.getImage() != null && !user.getImage().isEmpty()) {
+				// change image
+				if (!user.getImage().equals(existsUser.get().getImage())) {
+					// first time upload
+					if (existsUser.get().getImage() == null || existsUser.get().getImage().isEmpty()) {
+						user.setImage(gcFileUpload.upload(user.getImage()));
+					// more upload
+					} else {
+						user.setImage(gcFileUpload.upload(user.getImage(), existsUser.get().getImage()));
+					}
+				}
+			}
 			userRepository.save(user);
 		}
 	}

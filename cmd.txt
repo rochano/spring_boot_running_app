@@ -1,0 +1,4 @@
+#connect digital ocean
+ssh -i key/id_rsa root@139.59.253.97
+#replace jar file
+scp -i key/id_rsa /Users/rochanapanyaowapag/Documents/developer/eclipse_workspace/RUNNING_APP/running-app/target/running-app-0.0.1-SNAPSHOT.jar root@139.59.253.97:/root
